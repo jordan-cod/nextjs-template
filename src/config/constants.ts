@@ -1,5 +1,5 @@
 export const WEBSITE = {
-    name: "Ecommerce",
+    name: "Template app",
     description: "",
     logo: "",
     favicon: ""
