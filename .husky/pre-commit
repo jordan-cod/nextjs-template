@@ -1,0 +1,6 @@
+echo "Checking for linting errors..."
+
+npm run lint-staged ||
+(echo "Linting errors found. Please fix them before committing." && exit 1)
+
+echo "Done"
