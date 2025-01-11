@@ -4,3 +4,8 @@ export const WEBSITE = {
     logo: "",
     favicon: ""
 };
+
+export const I18N = {
+    locales: ["en", "pt"],
+    defaultLocale: "en"
+};
