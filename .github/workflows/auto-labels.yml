@@ -1,8 +1,12 @@
 name: ⚙️ Auto Label Setup
 
 on:
-    repository_dispatch:
-        types: [create-repository]
+    push:
+        branches:
+            - main
+
+    create:
+    workflow_dispatch:
 
 jobs:
     add-labels:
