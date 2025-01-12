@@ -12,7 +12,7 @@ export default function PrivatePage(): React.ReactElement {
             {t("title")}
             {user && (
                 <>
-                    <p>Logged as: {user.name}</p>
+                    <p>{t("userInfo", { name: user.name })}</p>
                     {user.image && (
                         <Image
                             src={user.image}
@@ -22,7 +22,7 @@ export default function PrivatePage(): React.ReactElement {
                             priority
                         />
                     )}
-                    <button onClick={signOut}>Sign Out</button>
+                    <button onClick={signOut}>{t("signOut")}</button>
                 </>
             )}
         </main>

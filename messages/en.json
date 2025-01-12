@@ -1,8 +1,11 @@
 {
     "HomePage": {
-        "title": "HomePage"
+        "title": "HomePage",
+        "signIn": "Sign in"
     },
     "PrivatePage": {
-        "title": "PrivatePage"
+        "title": "PrivatePage",
+        "userInfo": "Logged as: {name}",
+        "signOut": "Sign out"
     }
 }

@@ -9,7 +9,7 @@ export default function HomePage(): React.ReactElement {
     return (
         <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start flex-1">
             {t("title")}
-            <button onClick={signIn}>Sign In</button>
+            <button onClick={signIn}>{t("signIn")}</button>
         </main>
     );
 }
