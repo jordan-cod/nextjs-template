@@ -4,27 +4,43 @@ on:
     workflow_dispatch:
 
 jobs:
-    create-labels:
+    reset-and-create-labels:
         runs-on: ubuntu-latest
         permissions:
             issues: write
-        env:
-            LABELS_JSON: |
-                [
-                  { "name": "bug", "color": "d73a4a", "description": "Referente a um problema a ser consertado" },
-                  { "name": "configuração", "color": "0E8A16", "description": "Referente a ajustes nos ambiente de código e suas ferramentas" },
-                  { "name": "documentação", "color": "0075ca", "description": "Referente à criação ou modificação da documentação" },
-                  { "name": "funcionalidade", "color": "DC28A0", "description": "Referente ao desenvolvimento de uma nova funcionalidade" },
-                  { "name": "hotfix", "color": "B60205", "description": "Referente a uma alteração que precisa ser resolvida em produção urgentemente" },
-                  { "name": "implantação", "color": "5319E7", "description": "Referente à implantação do código em um servidor remoto" },
-                  { "name": "melhoria", "color": "AFDB9B", "description": "Referente a melhorias realizadas em funcionalidades da aplicação" },
-                  { "name": "teste", "color": "0E8A16", "description": "Referente à implementação de testes" }
-                ]
         steps:
             - uses: actions/github-script@v7
               with:
                   script: |
-                      const labels = JSON.parse(process.env.LABELS_JSON);
+                      const existingLabels = await github.rest.issues.listLabelsForRepo({
+                        owner: context.repo.owner,
+                        repo: context.repo.repo
+                      });
+
+                      for (const label of existingLabels.data) {
+                        try {
+                          await github.rest.issues.deleteLabel({
+                            owner: context.repo.owner,
+                            repo: context.repo.repo,
+                            name: label.name
+                          });
+                          console.log(`Label '${label.name}' removida com sucesso.`);
+                        } catch (error) {
+                          console.error(`Erro ao remover a label '${label.name}':`, error);
+                        }
+                      }
+
+                      const labels = [
+                        { "name": "bug", "color": "d73a4a", "description": "Referente a um problema a ser consertado" },
+                        { "name": "configuração", "color": "0E8A16", "description": "Referente a ajustes nos ambiente de código e suas ferramentas" },
+                        { "name": "documentação", "color": "0075ca", "description": "Referente à criação ou modificação da documentação" },
+                        { "name": "funcionalidade", "color": "DC28A0", "description": "Referente ao desenvolvimento de uma nova funcionalidade" },
+                        { "name": "hotfix", "color": "B60205", "description": "Referente a uma alteração que precisa ser resolvida em produção urgentemente" },
+                        { "name": "implantação", "color": "5319E7", "description": "Referente à implantação do código em um servidor remoto" },
+                        { "name": "melhoria", "color": "AFDB9B", "description": "Referente a melhorias realizadas em funcionalidades da aplicação" },
+                        { "name": "teste", "color": "0E8A16", "description": "Referente à implementação de testes" }
+                      ];
+
                       for (const label of labels) {
                         try {
                           await github.rest.issues.createLabel({
@@ -34,13 +50,13 @@ jobs:
                             description: label.description || '',
                             color: label.color
                           });
+                          console.log(`Label '${label.name}' criada com sucesso.`);
                         } catch (error) {
-                          // Check if the error is because the label already exists
                           if (error.status === 422) {
-                            console.log(`Label '${label.name}' already exists. Skipping.`);
+                            console.log(`Label '${label.name}' já existe. Pulando.`);
                           } else {
-                            // Log other errors
-                            console.error(`Error creating label '${label.name}': ${error}`);
+                            console.error(`Erro ao criar a label '${label.name}':`, error);
+                            throw error; // Para a execução caso um erro inesperado ocorra
                           }
                         }
                       }
