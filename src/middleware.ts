@@ -1,22 +1,31 @@
+import { getToken } from "next-auth/jwt";
 import createMiddleware from "next-intl/middleware";
-import { routing } from "./i18n/routing";
 import { NextRequest, NextResponse } from "next/server";
+import { routing } from "./i18n/routing";
 
-export default createMiddleware(routing);
+const intlMiddleware = createMiddleware(routing);
 
 const privateRoutes = ["/private"];
 
-export function middleware(request: NextRequest) {
-    const isPrivateRoute = privateRoutes.some((route) =>
-        request.nextUrl.pathname.includes(route)
-    );
-    const isUserAuthenticated = false; // Substituir com a verificação de autenticação
+export async function middleware(request: NextRequest) {
+    const pathname = request.nextUrl.pathname;
 
-    if (isPrivateRoute && !isUserAuthenticated) {
-        return NextResponse.redirect(new URL("/", request.url));
+    const isPrivateRoute = privateRoutes.some((route) =>
+        pathname.includes(route)
+    );
+
+    if (isPrivateRoute) {
+        const token = await getToken({
+            req: request,
+            secret: process.env.AUTH_SECRET
+        });
+
+        if (!token) {
+            return NextResponse.redirect(new URL("/", request.url));
+        }
     }
 
-    return createMiddleware(routing)(request);
+    return intlMiddleware(request);
 }
 
 export const config = {

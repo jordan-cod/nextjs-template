@@ -7,6 +7,7 @@ import "@/styles/reset.css";
 import "@/styles/globals.css";
 
 import { WEBSITE } from "@/config/constants";
+import { Providers } from "@/components/providers/providers";
 
 export const metadata: Metadata = {
     title: WEBSITE.name,
@@ -27,7 +28,7 @@ export default async function RootLayout({
         <html lang={locale} suppressHydrationWarning>
             <body className={`antialiased flex flex-col`}>
                 <NextIntlClientProvider messages={messages}>
-                    {children}
+                    <Providers>{children}</Providers>
                 </NextIntlClientProvider>
             </body>
         </html>
