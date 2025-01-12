@@ -1,16 +1,12 @@
 name: ⚙️ Auto Label Setup
 
 on:
-    push:
-        branches:
-            - main
-
-    create:
     workflow_dispatch:
 
 jobs:
     add-labels:
         runs-on: ubuntu-latest
+
         steps:
             - name: Check out the repository
               uses: actions/checkout@v3
@@ -20,9 +16,15 @@ jobs:
               with:
                   node-version: 16
 
-            - name: Run Label Setup Script
+            - name: Install Create GitHub Labels
               run: |
-                  npx create-github-labels \
+                  npm install -g create-github-labels
+
+            - name: Run Label Setup Script
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              run: |
+                  create-github-labels \
                     --repo-owner="${{ github.repository_owner }}" \
                     --repo-name="${{ github.event.repository.name }}" \
                     --access-token="${{ secrets.GITHUB_TOKEN }}" \
@@ -32,7 +34,7 @@ jobs:
                       { "name": "documentação", "color": "0075ca", "description": "Referente à criação ou modificação da documentação" },
                       { "name": "funcionalidade", "color": "DC28A0", "description": "Referente ao desenvolvimento de uma nova funcionalidade" },
                       { "name": "hotfix", "color": "B60205", "description": "Referente a uma alteração que precisa ser resolvida em produção urgentemente" },
-                      { "name": "implatanção", "color": "5319E7", "description": "Referente à implantação do código em um servidor remoto" },
+                      { "name": "implantação", "color": "5319E7", "description": "Referente à implantação do código em um servidor remoto" },
                       { "name": "melhoria", "color": "AFDB9B", "description": "Referente a melhorias realizadas em funcionalidades da aplicação" },
                       { "name": "teste", "color": "0E8A16", "description": "Referente à implementação de testes" }
                     ]'
